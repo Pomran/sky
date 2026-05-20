@@ -16,6 +16,7 @@
         </div>
     </div>
     <script>
+    function enc(name) { return encodeURIComponent(name); }
     fetch('data/video/index.json')
         .then(r => r.json())
         .then(videos => {
@@ -23,11 +24,11 @@
             videos.slice().reverse().forEach(v => {
                 const div = document.createElement('div');
                 div.className = 'video';
-                const poster = v.poster ? 'data/video/' + v.poster : '';
-                const bgStyle = v.poster ? 'background: url(data/video/' + v.poster + ');' : '';
+                const poster = v.poster ? 'data/video/' + enc(v.poster) : '';
+                const bgStyle = v.poster ? 'background: url(data/video/' + enc(v.poster) + ');' : '';
                 div.innerHTML = '<video controls preload="none"' +
                     (poster ? ' poster="' + poster + '"' : '') +
-                    ' src="data/video/' + v.filename + '"' +
+                    ' src="data/video/' + enc(v.filename) + '"' +
                     ' style="' + bgStyle + '">抱歉你的浏览器不支持查看视频。</video>';
                 box.appendChild(div);
             });

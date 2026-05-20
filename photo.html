@@ -6,11 +6,6 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
 	<link rel="stylesheet" type="text/css" href="https://cdn.staticfile.org/font-awesome/5.9.0/css/all.min.css" />
 	<link rel="stylesheet" type="text/css" href="photo/css/main.css" />
-	<link rel="stylesheet" type="text/css" href="photo/css/noscript.css" />
-	<noscript>
-		<link rel="stylesheet" href="photo/css/noscript.css" />
-	</noscript>
-	<link rel="stylesheet" href="photo/css/main.css" />
 	<link rel="stylesheet" href="https://cdn.staticfile.org/font-awesome/4.7.0/css/font-awesome.css">
 	<link rel="stylesheet" href="https://at.alicdn.com/t/font_1635479_m8o2ir6mitf.css">
 	<script src="https://at.alicdn.com/t/font_1635479_m8o2ir6mitf.js"></script>
@@ -29,8 +24,9 @@
 			transition: all 0.5s !important; padding: 0 10px !important;
 		}
 		#backhome:hover { color: #FFF !important; background-color: #000 !important; }
-		#main .thumb { display: none; }
-		#main .thumb.loaded { display: inline-block; }
+		#main .thumb { opacity: 0; transition: opacity 0.3s; }
+		#main .thumb.loaded { opacity: 1; }
+		.thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
 	</style>
 </head>
 <body class="is-preload">
@@ -63,76 +59,67 @@
 		</footer>
 	</div>
 
+	<script src="https://cdn.staticfile.org/jquery/3.4.1/jquery.min.js"></script>
+	<script src="photo/js/jquery.poptrox.min.js"></script>
 	<script>
-		fetch('data/images/index.json')
+	function imgUrl(name) { return 'data/images/' + encodeURIComponent(name); }
+
+	fetch('data/images/index.json')
 		.then(r => r.json())
 		.then(images => {
 			const main = document.getElementById('main');
 			images.slice().reverse().forEach(img => {
 				const article = document.createElement('article');
 				article.className = 'thumb img-area';
-				article.innerHTML = '<a class="image my-photo" alt="loading" data-src="" href="data/images/' + img + '">' +
-					'<img class="zmki_px my-photo" data-src="data/images/' + img + '" /></a><h2></h2>';
+				article.innerHTML = '<a class="image" href="' + imgUrl(img) + '">' +
+					'<img src="' + imgUrl(img) + '" /></a><h2></h2>';
 				main.appendChild(article);
 			});
 			document.querySelectorAll('.thumb').forEach(el => el.classList.add('loaded'));
-			if (typeof checkImgs === 'function') checkImgs();
-			if (window.$ && $.fn.poptrox) {
-				$('#main').poptrox({
-					baseZIndex: 20000,
-					caption: function($a) { var s = ''; $a.nextAll().each(function() { s += this.outerHTML; }); return s; },
-					fadeSpeed: 300,
-					onPopupClose: function() { $('body').removeClass('modal-active'); },
-					onPopupOpen: function() { $('body').addClass('modal-active'); },
-					overlayOpacity: 0,
-					popupCloserText: '',
-					popupHeight: 150,
-					popupLoaderText: '',
-					popupSpeed: 300,
-					popupWidth: 150,
-					selector: '.thumb > a.image',
-					usePopupCaption: true,
-					usePopupCloser: true,
-					usePopupDefaultStyling: false,
-					usePopupForceClose: true,
-					usePopupLoader: true,
-					usePopupNav: true,
-					windowMargin: 50
-				});
-			}
+			$('#main').poptrox({
+				baseZIndex: 20000,
+				caption: function($a) { var s = ''; $a.nextAll().each(function() { s += this.outerHTML; }); return s; },
+				fadeSpeed: 300,
+				onPopupClose: function() { $('body').removeClass('modal-active'); },
+				onPopupOpen: function() { $('body').addClass('modal-active'); },
+				overlayOpacity: 0,
+				popupCloserText: '',
+				popupHeight: 150,
+				popupLoaderText: '',
+				popupSpeed: 300,
+				popupWidth: 150,
+				selector: '.thumb > a.image',
+				usePopupCaption: true,
+				usePopupCloser: true,
+				usePopupDefaultStyling: false,
+				usePopupForceClose: true,
+				usePopupLoader: true,
+				usePopupNav: true,
+				windowMargin: 50
+			});
+			document.body.classList.remove('is-preload');
 		});
 
-	function isInSight(el) {
-		const bound = el.getBoundingClientRect();
-		return bound.top <= window.innerHeight + 100;
+	function enterfullscreen() {
+		var el = document.documentElement;
+		if (el.requestFullscreen) el.requestFullscreen();
+		else if (el.webkitRequestFullScreen) el.webkitRequestFullScreen();
+		else if (el.mozRequestFullScreen) el.mozRequestFullScreen();
+		else if (el.msRequestFullscreen) el.msRequestFullscreen();
 	}
-	let index = 0;
-	function checkImgs() {
-		const imgs = document.querySelectorAll('.my-photo');
-		for (let i = index; i < imgs.length; i++) {
-			if (isInSight(imgs[i])) { loadImg(imgs[i]); index = i; }
-		}
+	function exitfullscreen() {
+		if (document.exitFullscreen) document.exitFullscreen();
+		else if (document.webkitCancelFullScreen) document.webkitCancelFullScreen();
+		else if (document.mozCancelFullScreen) document.mozCancelFullScreen();
+		else if (document.msExitFullscreen) document.msExitFullscreen();
 	}
-	function loadImg(el) {
-		if (!el.src) { el.src = el.dataset.src; }
-	}
-	function throttle(fn, mustRun = 10) {
-		let previous = null;
-		return function() {
-			const now = new Date();
-			if (!previous) { previous = now; }
-			const remaining = now - previous;
-			if (mustRun && remaining >= mustRun) { fn.apply(this, arguments); previous = now; }
-		};
-	}
-	window.onload = checkImgs;
-	window.onscroll = throttle(checkImgs);
+	var a = 0;
+	document.getElementById('fullscreen').onclick = function() {
+		a++; a % 2 == 1 ? enterfullscreen() : exitfullscreen();
+	};
 	</script>
-	<script src="https://cdn.staticfile.org/jquery/3.4.1/jquery.min.js"></script>
-	<script src="photo/js/jquery.poptrox.min.js"></script>
 	<script src="photo/js/browser.min.js"></script>
 	<script src="photo/js/breakpoints.min.js"></script>
 	<script src="photo/js/util.js"></script>
-	<script src="photo/js/main.js"></script>
 </body>
 </html>
