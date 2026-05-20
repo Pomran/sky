@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>Sky · 燃 · 梦 - 相册</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+	<link rel="stylesheet" type="text/css" href="https://cdn.staticfile.org/font-awesome/5.9.0/css/all.min.css" />
+	<link rel="stylesheet" type="text/css" href="photo/css/main.css" />
+	<link rel="stylesheet" type="text/css" href="photo/css/noscript.css" />
+	<noscript>
+		<link rel="stylesheet" href="photo/css/noscript.css" />
+	</noscript>
+	<link rel="stylesheet" href="photo/css/main.css" />
+	<link rel="stylesheet" href="https://cdn.staticfile.org/font-awesome/4.7.0/css/font-awesome.css">
+	<link rel="stylesheet" href="https://at.alicdn.com/t/font_1635479_m8o2ir6mitf.css">
+	<script src="https://at.alicdn.com/t/font_1635479_m8o2ir6mitf.js"></script>
+	<link rel="icon" type="image/ico" href="img/icon.png">
+	<style>
+		@font-face {
+			font-family: "DIY font";
+			src: url("https://cdn.jsdelivr.net/gh/xiaoyanu/file-test@2021.12.20/more/HarmonyOS_Sans_SC_Medium.subset.woff2") format("truetype");
+		}
+		html, body { font-family: "DIY font" !important; }
+		#backhome {
+			color: black !important; text-decoration: none !important;
+			width: 80px !important; margin: 6px !important;
+			text-align: center !important; background: #FFF !important;
+			border-radius: 10px !important; border: 1px solid rgba(0,0,0,0.18) !important;
+			transition: all 0.5s !important; padding: 0 10px !important;
+		}
+		#backhome:hover { color: #FFF !important; background-color: #000 !important; }
+		#main .thumb { display: none; }
+		#main .thumb.loaded { display: inline-block; }
+	</style>
+</head>
+<body class="is-preload">
+	<div id="wrapper">
+		<header id="header">
+			<h1><strong>📷我们的相册</strong>&nbsp;&nbsp;&nbsp;<a id="backhome" href="index.html">返回首页</a></h1>
+			<nav>
+				<ul>
+					<li><a type="button" id="fullscreen" class="btn btn-default visible-lg visible-md" alt="切换全屏"><svg class="icon-zmki zmki_dh zmki_wap" aria-hidden="true"><use xlink:href="#icon-zmki-ziyuan-copy"></use></svg></a></li>
+					<li><a href="#footer" class="icon solid fa-info-circle">关于</a></li>
+				</ul>
+			</nav>
+		</header>
+		<div id="main"></div>
+		<footer id="footer" class="panel">
+			<div class="inner split">
+				<div class="inner split">
+					<div>
+						<section>
+							<h2>关于相册</h2>
+							<p>相册记录着我们的点点滴滴 意义非凡<br>💕光是遇见 就很美好</p>
+						</section>
+						<span style="color: #b5b5b5; font-size: 0.8em;"></span>
+						<p class="copyright"><b>&copy; 光遇小站 </b> &nbsp; By 橘笙 / 清晨.</p>
+						<div></div>
+					</div>
+					<div></div>
+				</div>
+			</div>
+		</footer>
+	</div>
+
+	<script>
+		fetch('data/images/index.json')
+		.then(r => r.json())
+		.then(images => {
+			const main = document.getElementById('main');
+			images.slice().reverse().forEach(img => {
+				const article = document.createElement('article');
+				article.className = 'thumb img-area';
+				article.innerHTML = '<a class="image my-photo" alt="loading" data-src="" href="data/images/' + img + '">' +
+					'<img class="zmki_px my-photo" data-src="data/images/' + img + '" /></a><h2></h2>';
+				main.appendChild(article);
+			});
+			document.querySelectorAll('.thumb').forEach(el => el.classList.add('loaded'));
+			if (typeof checkImgs === 'function') checkImgs();
+			if (window.$ && $.fn.poptrox) {
+				$('#main').poptrox({
+					baseZIndex: 20000,
+					caption: function($a) { var s = ''; $a.nextAll().each(function() { s += this.outerHTML; }); return s; },
+					fadeSpeed: 300,
+					onPopupClose: function() { $('body').removeClass('modal-active'); },
+					onPopupOpen: function() { $('body').addClass('modal-active'); },
+					overlayOpacity: 0,
+					popupCloserText: '',
+					popupHeight: 150,
+					popupLoaderText: '',
+					popupSpeed: 300,
+					popupWidth: 150,
+					selector: '.thumb > a.image',
+					usePopupCaption: true,
+					usePopupCloser: true,
+					usePopupDefaultStyling: false,
+					usePopupForceClose: true,
+					usePopupLoader: true,
+					usePopupNav: true,
+					windowMargin: 50
+				});
+			}
+		});
+
+	function isInSight(el) {
+		const bound = el.getBoundingClientRect();
+		return bound.top <= window.innerHeight + 100;
+	}
+	let index = 0;
+	function checkImgs() {
+		const imgs = document.querySelectorAll('.my-photo');
+		for (let i = index; i < imgs.length; i++) {
+			if (isInSight(imgs[i])) { loadImg(imgs[i]); index = i; }
+		}
+	}
+	function loadImg(el) {
+		if (!el.src) { el.src = el.dataset.src; }
+	}
+	function throttle(fn, mustRun = 10) {
+		let previous = null;
+		return function() {
+			const now = new Date();
+			if (!previous) { previous = now; }
+			const remaining = now - previous;
+			if (mustRun && remaining >= mustRun) { fn.apply(this, arguments); previous = now; }
+		};
+	}
+	window.onload = checkImgs;
+	window.onscroll = throttle(checkImgs);
+	</script>
+	<script src="https://cdn.staticfile.org/jquery/3.4.1/jquery.min.js"></script>
+	<script src="photo/js/jquery.poptrox.min.js"></script>
+	<script src="photo/js/browser.min.js"></script>
+	<script src="photo/js/breakpoints.min.js"></script>
+	<script src="photo/js/util.js"></script>
+	<script src="photo/js/main.js"></script>
+</body>
+</html>

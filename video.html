@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Sky · 燃 · 梦 - 视频</title>
+    <link rel="icon" type="image/ico" href="img/icon.png">
+    <link rel="stylesheet" href="css/video.css">
+</head>
+<body>
+    <div id="main">
+        <div id="box"></div>
+        <div id="footer">
+            Sky · 燃 · 梦
+            <a id="backhome" href="index.html">返回首页</a>
+        </div>
+    </div>
+    <script>
+    fetch('data/video/index.json')
+        .then(r => r.json())
+        .then(videos => {
+            const box = document.getElementById('box');
+            videos.slice().reverse().forEach(v => {
+                const div = document.createElement('div');
+                div.className = 'video';
+                const poster = v.poster ? 'data/video/' + v.poster : '';
+                const bgStyle = v.poster ? 'background: url(data/video/' + v.poster + ');' : '';
+                div.innerHTML = '<video controls preload="none"' +
+                    (poster ? ' poster="' + poster + '"' : '') +
+                    ' src="data/video/' + v.filename + '"' +
+                    ' style="' + bgStyle + '">抱歉你的浏览器不支持查看视频。</video>';
+                box.appendChild(div);
+            });
+        });
+    </script>
+</body>
+</html>

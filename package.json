@@ -1,0 +1,7 @@
+{
+  "name": "sky-main",
+  "private": true,
+  "scripts": {
+    "build": "node build.js"
+  }
+}

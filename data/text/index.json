@@ -1,0 +1,6 @@
+[
+  {
+    "filename": "hello.txt",
+    "content": "Hello! 欢迎来到小本本~\n\n这里可以记录任何你想记录的文字内容。\n把 .txt 或 .md 文件放到 data/text/ 目录下，然后运行 npm run build 即可自动更新。\n\n—— 光遇小站\n"
+  }
+]
