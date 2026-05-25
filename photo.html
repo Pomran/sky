@@ -4,122 +4,107 @@
 	<meta charset="utf-8">
 	<title>Sky · 燃 · 梦 - 相册</title>
 	<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
-	<link rel="stylesheet" type="text/css" href="https://cdn.staticfile.org/font-awesome/5.9.0/css/all.min.css" />
-	<link rel="stylesheet" type="text/css" href="photo/css/main.css" />
-	<link rel="stylesheet" href="https://cdn.staticfile.org/font-awesome/4.7.0/css/font-awesome.css">
-	<link rel="stylesheet" href="https://at.alicdn.com/t/font_1635479_m8o2ir6mitf.css">
-	<script src="https://at.alicdn.com/t/font_1635479_m8o2ir6mitf.js"></script>
 	<link rel="icon" type="image/ico" href="img/icon.png">
 	<style>
 		@font-face {
 			font-family: "DIY font";
 			src: url("https://cdn.jsdelivr.net/gh/xiaoyanu/file-test@2021.12.20/more/HarmonyOS_Sans_SC_Medium.subset.woff2") format("truetype");
 		}
-		html, body { font-family: "DIY font" !important; }
-		#backhome {
-			color: black !important; text-decoration: none !important;
-			width: 80px !important; margin: 6px !important;
-			text-align: center !important; background: #FFF !important;
-			border-radius: 10px !important; border: 1px solid rgba(0,0,0,0.18) !important;
-			transition: all 0.5s !important; padding: 0 10px !important;
+		* { margin: 0; padding: 0; box-sizing: border-box; font-family: "DIY font"; }
+		body {
+			background: url(img/bg.jpg) fixed no-repeat;
+			background-size: cover;
+			min-height: 100vh;
 		}
-		#backhome:hover { color: #FFF !important; background-color: #000 !important; }
-		#main .thumb { opacity: 0; transition: opacity 0.3s; }
-		#main .thumb.loaded { opacity: 1; }
-		.thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+		#header {
+			text-align: center;
+			padding: 20px;
+			color: #fff;
+			text-shadow: 0 2px 10px rgba(0,0,0,0.5);
+		}
+		#header h1 { font-size: 1.5em; }
+		#backhome {
+			display: inline-block;
+			color: #fff;
+			text-decoration: none;
+			border: 1px solid rgba(255,255,255,0.4);
+			border-radius: 20px;
+			padding: 4px 20px;
+			font-size: 0.85em;
+			margin-left: 10px;
+			background: rgba(255,255,255,0.1);
+			transition: all 0.3s;
+		}
+		#backhome:hover { color: #000; background: #fff; }
+		#main {
+			max-width: 1200px;
+			margin: 0 auto;
+			padding: 10px;
+			display: grid;
+			grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+			gap: 10px;
+		}
+		.thumb {
+			border-radius: 12px;
+			overflow: hidden;
+			position: relative;
+			aspect-ratio: 1;
+			backdrop-filter: blur(5px);
+			background: rgba(255,255,255,0.1);
+			border: 1px solid rgba(255,255,255,0.2);
+			opacity: 0;
+			transform: translateY(10px);
+			transition: opacity 0.4s, transform 0.4s;
+		}
+		.thumb.loaded {
+			opacity: 1;
+			transform: translateY(0);
+		}
+		.thumb a { display: block; width: 100%; height: 100%; cursor: zoom-in; }
+		.thumb img {
+			width: 100%;
+			height: 100%;
+			object-fit: cover;
+			display: block;
+		}
+		#footer {
+			text-align: center;
+			color: #fff;
+			padding: 20px;
+		}
+		@media only screen and (max-width: 639px) {
+			body { background-image: url(img/bg3.jpg); }
+			#main { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 5px; padding: 5px; }
+		}
 	</style>
 </head>
-<body class="is-preload">
-	<div id="wrapper">
-		<header id="header">
-			<h1><strong>📷我们的相册</strong>&nbsp;&nbsp;&nbsp;<a id="backhome" href="index.html">返回首页</a></h1>
-			<nav>
-				<ul>
-					<li><a type="button" id="fullscreen" class="btn btn-default visible-lg visible-md" alt="切换全屏"><svg class="icon-zmki zmki_dh zmki_wap" aria-hidden="true"><use xlink:href="#icon-zmki-ziyuan-copy"></use></svg></a></li>
-					<li><a href="#footer" class="icon solid fa-info-circle">关于</a></li>
-				</ul>
-			</nav>
-		</header>
-		<div id="main"></div>
-		<footer id="footer" class="panel">
-			<div class="inner split">
-				<div class="inner split">
-					<div>
-						<section>
-							<h2>关于相册</h2>
-							<p>相册记录着我们的点点滴滴 意义非凡<br>💕光是遇见 就很美好</p>
-						</section>
-						<span style="color: #b5b5b5; font-size: 0.8em;"></span>
-						<p class="copyright"><b>&copy; 光遇小站 </b> &nbsp; By 橘笙 / 清晨.</p>
-						<div></div>
-					</div>
-					<div></div>
-				</div>
-			</div>
-		</footer>
+<body>
+	<div id="header">
+		<h1>📷 我们的相册 <a id="backhome" href="index.html">返回首页</a></h1>
 	</div>
-
-	<script src="https://cdn.staticfile.org/jquery/3.4.1/jquery.min.js"></script>
-	<script src="photo/js/jquery.poptrox.min.js"></script>
+	<div id="main"></div>
+	<div id="footer">Sky · 燃 · 梦</div>
 	<script>
 	function imgUrl(name) { return 'data/images/' + encodeURIComponent(name); }
 
 	fetch('data/images/index.json')
-		.then(r => r.json())
+		.then(r => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
 		.then(images => {
 			const main = document.getElementById('main');
-			images.slice().reverse().forEach(img => {
-				const article = document.createElement('article');
-				article.className = 'thumb img-area';
-				article.innerHTML = '<a class="image" href="' + imgUrl(img) + '">' +
-					'<img src="' + imgUrl(img) + '" /></a><h2></h2>';
+			images.slice().reverse().forEach((img, i) => {
+				const article = document.createElement('div');
+				article.className = 'thumb';
+				article.style.transitionDelay = (i * 0.05) + 's';
+				article.innerHTML = '<a href="' + imgUrl(img) + '" target="_blank"><img src="' + imgUrl(img) + '" /></a>';
 				main.appendChild(article);
 			});
-			document.querySelectorAll('.thumb').forEach(el => el.classList.add('loaded'));
-			$('#main').poptrox({
-				baseZIndex: 20000,
-				caption: function($a) { var s = ''; $a.nextAll().each(function() { s += this.outerHTML; }); return s; },
-				fadeSpeed: 300,
-				onPopupClose: function() { $('body').removeClass('modal-active'); },
-				onPopupOpen: function() { $('body').addClass('modal-active'); },
-				overlayOpacity: 0,
-				popupCloserText: '',
-				popupHeight: 150,
-				popupLoaderText: '',
-				popupSpeed: 300,
-				popupWidth: 150,
-				selector: '.thumb > a.image',
-				usePopupCaption: true,
-				usePopupCloser: true,
-				usePopupDefaultStyling: false,
-				usePopupForceClose: true,
-				usePopupLoader: true,
-				usePopupNav: true,
-				windowMargin: 50
+			requestAnimationFrame(() => {
+				document.querySelectorAll('.thumb').forEach(el => el.classList.add('loaded'));
 			});
-			document.body.classList.remove('is-preload');
+		})
+		.catch(err => {
+			document.getElementById('main').innerHTML = '<div style="color:#fff;text-align:center;padding:40px;">加载失败: ' + err.message + '</div>';
 		});
-
-	function enterfullscreen() {
-		var el = document.documentElement;
-		if (el.requestFullscreen) el.requestFullscreen();
-		else if (el.webkitRequestFullScreen) el.webkitRequestFullScreen();
-		else if (el.mozRequestFullScreen) el.mozRequestFullScreen();
-		else if (el.msRequestFullscreen) el.msRequestFullscreen();
-	}
-	function exitfullscreen() {
-		if (document.exitFullscreen) document.exitFullscreen();
-		else if (document.webkitCancelFullScreen) document.webkitCancelFullScreen();
-		else if (document.mozCancelFullScreen) document.mozCancelFullScreen();
-		else if (document.msExitFullscreen) document.msExitFullscreen();
-	}
-	var a = 0;
-	document.getElementById('fullscreen').onclick = function() {
-		a++; a % 2 == 1 ? enterfullscreen() : exitfullscreen();
-	};
 	</script>
-	<script src="photo/js/browser.min.js"></script>
-	<script src="photo/js/breakpoints.min.js"></script>
-	<script src="photo/js/util.js"></script>
 </body>
 </html>
