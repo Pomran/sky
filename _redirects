@@ -1,7 +1,3 @@
 # Cloudflare Pages redirects
 /photo.php  /photo.html  301
 /video.php  /video.html  301
-/photo  /photo.html  301
-/video  /video.html  301
-/notebook  /notebook.html  301
-/index  /  301
